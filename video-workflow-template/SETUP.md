@@ -43,7 +43,32 @@ cp .github/ISSUE_TEMPLATE/video-request.md .github/ISSUE_TEMPLATE/
 
 `.claude/mcp-kamuicode.json` ファイルを作成し、kamuicodeのMCP設定を記述。
 
-### 4. 権限の確認
+### 4. Claude Code権限設定
+
+`.claude/settings.json` ファイルで必要なツール権限を設定：
+
+```json
+{
+  "defaultMode": "acceptEdits",
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(open:*)",
+      "mcp__*",
+      "mcp__t2i-fal-imagen4-ultra__imagen4_ultra_submit",
+      "mcp__t2i-fal-imagen4-ultra__imagen4_ultra_status", 
+      "mcp__t2i-fal-imagen4-ultra__imagen4_ultra_result",
+      "mcp__r2v-fal-vidu-q1__vidu_q1_submit",
+      "mcp__r2v-fal-vidu-q1__vidu_q1_status",
+      "mcp__r2v-fal-vidu-q1__vidu_q1_result"
+    ]
+  }
+}
+```
+
+**注意**: この設定がないと、Claude CodeがMCPツールを使用できずワークフローが失敗します。
+
+### 5. 権限の確認
 
 リポジトリの Settings → Actions → General で以下を確認：
 
