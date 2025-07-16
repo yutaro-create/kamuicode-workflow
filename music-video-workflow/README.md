@@ -126,4 +126,4 @@ Issues、Pull Requests大歓迎です！
 
 ---
 
-🎵 **AI-generated Music Video Workflow** - Powered by Claude Code SDK & kamuicode MCP
+🎵 **AI-generated Music Video Workflow** - Powered by [Claude Code SDK](https://github.com/anthropics/claude-code) & [kamuicode MCP](https://www.kamui.ai/ja)

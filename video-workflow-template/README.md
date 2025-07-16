@@ -63,3 +63,7 @@ Settings → Actions → General で以下を設定：
 
 ## ライセンス
 MIT License
+
+---
+
+🎬 **AI Video Generation Workflow** - Powered by [Claude Code SDK](https://github.com/anthropics/claude-code) & [kamuicode MCP](https://www.kamui.ai/ja)
