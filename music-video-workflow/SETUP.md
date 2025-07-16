@@ -200,18 +200,45 @@ cat .claude/settings.json
 
 ### 2.4 Secrets設定手順
 
+**2つの方法があります：**
+
+#### 方法1: GitHub CLI（推奨・簡単）
+
+**前提条件:**
+- GitHub CLI (`gh`) がインストール済み
+- `gh auth login` で認証済み
+
+```bash
+# カレントディレクトリがリポジトリ内の場合
+gh secret set ANTHROPIC_API_KEY --app actions
+# ↑ 実行後、APIキーを安全に入力（画面に表示されません）
+
+# PAT_TOKEN（必要に応じて）
+gh secret set PAT_TOKEN --app actions
+
+# 設定確認
+gh secret list --app actions
+```
+
+**特定のリポジトリに設定する場合:**
+```bash
+gh secret set ANTHROPIC_API_KEY --app actions --repo owner/repo-name
+```
+
+#### 方法2: GitHub Web UI（従来通り）
+
 1. **GitHubリポジトリページ**にアクセス
 2. **Settings**タブをクリック
 3. 左サイドバーの**Secrets and variables** → **Actions**をクリック
 4. **New repository secret**をクリック
 5. 以下を順番に追加：
 
-#### ANTHROPIC_API_KEYの追加：
+**ANTHROPIC_API_KEYの追加：**
 - **Name**: `ANTHROPIC_API_KEY`
 - **Secret**: 先ほどコピーしたClaude APIキー
 - **Add secret**をクリック
 
-#### PAT_TOKENの追加（必要に応じて）：
+**PAT_TOKENの追加（必要に応じて）：**
 - **Name**: `PAT_TOKEN`  
 - **Secret**: 先ほどコピーしたPersonal Access Token
 - **Add secret**をクリック
