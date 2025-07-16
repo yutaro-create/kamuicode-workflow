@@ -252,18 +252,22 @@ jobs:
         **あなたの役割**: rembgとffmpegを使用して動画の背景を除去する専門エージェント
 
         **処理手順**:
-        1. 動画「$FOLDER_NAME/original/generated-video.mp4」をフレームに分割
-        2. 各フレームにrembgで背景除去を適用（モデル: $REMBG_MODEL）
-        3. 背景色「$BACKGROUND_COLOR」を適用
-        4. 処理済みフレームから動画を再構築
-        5. 最終動画を「$FOLDER_NAME/final/video-background-removed.mp4」または「.webm」として保存
+        1. 動画「$FOLDER_NAME/original/generated-video.mp4」から音声を分離・保存
+        2. 動画をフレームに分割
+        3. 各フレームにrembgで背景除去を適用（モデル: $REMBG_MODEL）
+        4. 背景色「$BACKGROUND_COLOR」を適用
+        5. 処理済みフレームから動画を再構築
+        6. 分離していた音声を最終動画に結合
+        7. 最終動画を「$FOLDER_NAME/final/video-background-removed.mp4」または「.webm」として保存
 
         **技術仕様**:
         - rembgモデル: $REMBG_MODEL
         - 背景色: $BACKGROUND_COLOR (transparent/white/black/green)
-        - フレームレート: 30fps
+        - フレームレート: 30fps（元動画と同じ）
+        - 音声形式: AAC（音声がある場合）
         - 透明背景の場合: WebM形式で出力
         - 不透明背景の場合: MP4形式で出力
+        - **重要**: 最終動画の長さは元動画と完全に一致させること
 
         **必要な処理**:
         ```bash
@@ -272,27 +276,43 @@ jobs:
         # ディレクトリ準備
         mkdir -p frames processed final
         
-        # フレーム抽出
-        ffmpeg -i original/generated-video.mp4 -vf fps=30 frames/frame_%04d.png
+        # 元動画の情報を取得（フレームレート、長さ、解像度）
+        ORIGINAL_FPS=\$(ffprobe -v quiet -select_streams v:0 -show_entries stream=avg_frame_rate -of csv=p=0 original/generated-video.mp4)
+        ORIGINAL_DURATION=\$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 original/generated-video.mp4)
+        
+        # 音声分離（元動画に音声がある場合）
+        ffmpeg -i original/generated-video.mp4 -vn -acodec copy original/audio.aac
+        
+        # フレーム抽出（元動画と同じフレームレートで）
+        ffmpeg -i original/generated-video.mp4 -vf fps=\$ORIGINAL_FPS frames/frame_%04d.png
         
         # rembgで背景除去 (Python)
         # - rembg[$REMBG_MODEL]を使用
         # - 背景色$BACKGROUND_COLORを適用
         
-        # 動画再構築
+        # 動画再構築（元動画と同じフレームレート・長さで）
+        # フレームレート: \$ORIGINAL_FPS
+        # 長さ: \$ORIGINAL_DURATION秒
         # transparent → WebM、その他 → MP4
+        
+        # 音声結合（音声ファイルが存在する場合）
+        # 最終動画に音声を合成し、元動画と同じ長さに調整
         ```
 
         **重要**: 
         - rembgライブラリのインストール: pip install \"rembg[cpu]\" opencv-python pillow numpy
         - 各フレームを個別に処理
+        - 音声分離・結合処理を含める
+        - 元動画に音声がない場合は音声処理をスキップ
+        - **必須**: 最終動画の長さを元動画と完全に一致させること
+        - ffprobeで元動画の正確な情報を取得すること
         - エラーハンドリングを含める
         - 処理進捗を表示"
         
         npx @anthropic-ai/claude-code \
           --mcp-config="$MCP_CONFIG_ABS_PATH" \
           --allowedTools "Bash" \
-          --max-turns 50 \
+          --max-turns 70 \
           --verbose \
           --permission-mode "acceptEdits" \
           -p "$REMOVAL_PROMPT_FULL" || {
