@@ -235,21 +235,19 @@ your-repo/
 └── (他のファイル)
 ```
 
-## 🎛️ ステップ4: 権限設定
+## 🎛️ ステップ4: GitHub権限設定（必要に応じて）
 
-### 4.1 Actions権限
+**ほとんどの場合、新しいリポジトリでは標準でONになっているため設定不要です。**
 
-**Settings** → **Actions** → **General**
-
-- ✅ Allow all actions and reusable workflows
-- ✅ Allow GitHub Actions to create and approve pull requests
-
-### 4.2 Workflow権限
+ワークフローが権限エラーで失敗する場合のみ、以下を確認してください：
 
 **Settings** → **Actions** → **General** → **Workflow permissions**
+- ✅ "Read and write permissions" を選択
+- ✅ "Allow GitHub Actions to create and approve pull requests" をチェック
 
-- ✅ Read and write permissions
-- ✅ Allow GitHub Actions to create and approve pull requests
+**よくあるエラー:**
+- `Permission denied to create branch` → 上記設定を確認
+- `Resource not accessible by integration` → PR作成権限を確認
 
 ## 🧪 ステップ5: テスト実行
 

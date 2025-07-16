@@ -229,19 +229,19 @@ cat .claude/settings.json
 - 主に読み取り専用コマンドと必要最小限の書き込み権限のみを許可
 - 実行環境はGitHub Actionsの分離された環境のため、ローカルシステムへの影響はありません
 
-### 4. GitHub権限設定
+### 4. GitHub権限設定（必要に応じて）
 
-リポジトリの Settings → Actions → General で以下を確認：
+**ほとんどの場合、新しいリポジトリでは標準でONになっているため設定不要です。**
 
-- **Workflow permissions**: "Read and write permissions" を選択
-  - 理由: ワークフローが新しいブランチを作成し、ファイルをコミット・プッシュするため
-  
-- **Allow GitHub Actions to create and approve pull requests**: チェック
-  - 理由: 最終ステップで生成した動画をプルリクエストとして自動作成するため
+ワークフローが権限エラーで失敗する場合のみ、以下を確認してください：
 
-これらの権限がないと、ワークフローは以下のエラーで失敗します：
-- ブランチ作成時: `Permission denied to create branch`
-- PR作成時: `Resource not accessible by integration`
+**Settings** → **Actions** → **General** → **Workflow permissions**
+- ✅ "Read and write permissions" を選択  
+- ✅ "Allow GitHub Actions to create and approve pull requests" をチェック
+
+**よくあるエラー:**
+- `Permission denied to create branch` → 上記設定を確認
+- `Resource not accessible by integration` → PR作成権限を確認
 
 ## 使い方
 
