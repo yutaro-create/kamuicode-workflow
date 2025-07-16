@@ -6,11 +6,7 @@
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/あなたのユーザー名/あなたのリポジトリ名.git
-cd あなたのリポジトリ名
-
-# または既存のリポジトリに移動
-cd your-existing-repo
+git clone https://github.com/KentaHomma/kamuicode-workflow.git
 ```
 
 ## ディレクトリ構造

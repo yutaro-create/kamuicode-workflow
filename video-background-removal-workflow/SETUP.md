@@ -1,6 +1,6 @@
 # セットアップガイド
 
-AI Music Video Generator Workflowのセットアップ手順
+AI Video Background Removal Workflowのセットアップ手順
 
 ## 📋 前提条件
 
@@ -24,13 +24,27 @@ git clone https://github.com/KentaHomma/kamuicode-workflow.git
 mkdir -p .github/workflows
 
 # ワークフローファイルをコピー
-cp kamuicode-workflow/music-video-workflow/create-music-video.yml .github/workflows/
+cp kamuicode-workflow/video-background-removal-workflow/create-video-with-bg-removal.yml .github/workflows/
+cp kamuicode-workflow/video-background-removal-workflow/issue-bg-removal-trigger.yml .github/workflows/
 
 # ファイルが正しくコピーされたか確認
 ls -la .github/workflows/
 ```
 
-### 1.3 Claude Code設定
+### 1.3 Issueテンプレートの配置
+
+```bash
+# Issueテンプレートディレクトリを作成
+mkdir -p .github/ISSUE_TEMPLATE
+
+# Issueテンプレートをコピー
+cp kamuicode-workflow/video-background-removal-workflow/video-bg-removal-request.md .github/ISSUE_TEMPLATE/
+
+# ファイルが正しくコピーされたか確認
+ls -la .github/ISSUE_TEMPLATE/
+```
+
+### 1.4 Claude Code設定
 
 #### MCP設定ファイルの配置
 
@@ -40,7 +54,7 @@ mkdir -p .claude
 
 # kamuicode MCP設定ファイルを配置
 # .claude/mcp-kamuicode.json の設定が必要
-cp kamuicode-workflow/music-video-workflow/.claude/mcp-kamuicode.json .claude/
+cp kamuicode-workflow/video-background-removal-workflow/.claude/mcp-kamuicode.json .claude/
 
 # 設定ファイルが正しく配置されたか確認
 ls -la .claude/
@@ -57,7 +71,7 @@ ls -la .claude/
 3. **追加のBashコマンドの特定** - ダウンロード、動画編集、システムコマンド等の特定
 4. **包括的な権限設定** - すべての必要な権限を網羅
 
-`--allowedTools`だけでは不十分で、実際にClaude Codeが実行する処理（ダウンロード、ffmpeg、sleep等）を分析する必要があります。
+`--allowedTools`だけでは不十分で、実際にClaude Codeが実行する処理（ダウンロード、ffmpeg、Python等）を分析する必要があります。
 
 `.claude/settings.json` ファイルを作成し、ワークフローで使用するツールの権限を設定する必要があります：
 
@@ -91,22 +105,12 @@ cat > .claude/settings.json << 'EOF'
       "Bash(echo:*)",
       "Bash(npx:*)",
       "Bash(open:*)",
-      "mcp__t2i-fal-imagen4-ultra__imagen4_ultra_submit",
-      "mcp__t2i-fal-imagen4-ultra__imagen4_ultra_status", 
-      "mcp__t2i-fal-imagen4-ultra__imagen4_ultra_result",
-      "mcp__t2i-fal-imagen4-fast__imagen4_fast_submit",
-      "mcp__t2i-fal-imagen4-fast__imagen4_fast_status",
-      "mcp__t2i-fal-imagen4-fast__imagen4_fast_result",
-      "mcp__r2v-fal-vidu-q1__vidu_q1_submit",
-      "mcp__r2v-fal-vidu-q1__vidu_q1_status",
-      "mcp__r2v-fal-vidu-q1__vidu_q1_result",
+      "Bash(ffmpeg:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
       "mcp__t2v-fal-veo3-fast__veo3_fast_submit",
       "mcp__t2v-fal-veo3-fast__veo3_fast_status",
-      "mcp__t2v-fal-veo3-fast__veo3_fast_result",
-      "mcp__i2v-fal-hailuo-02-pro__hailuo_02_submit",
-      "mcp__i2v-fal-hailuo-02-pro__hailuo_02_status",
-      "mcp__i2v-fal-hailuo-02-pro__hailuo_02_result",
-      "mcp__t2m-google-lyria__lyria_generate"
+      "mcp__t2v-fal-veo3-fast__veo3_fast_result"
     ]
   }
 }
@@ -118,7 +122,7 @@ cat .claude/settings.json
 
 **⚠️ 重要**: この設定がないと、Claude CodeがMCPツールを使用できずワークフローが失敗します。
 
-**ワークフロー分析結果 - 実際に動作確認済みの権限一覧:**
+**ワークフロー分析結果 - 動画背景除去に必要な権限一覧:**
 
 **基本的なBashコマンド:**
 - `Bash(curl:*)` - ファイルダウンロード
@@ -138,6 +142,11 @@ cat .claude/settings.json
 - `Bash(npx:*)` - Node.js実行
 - `Bash(open:*)` - ファイルオープン
 
+**動画処理コマンド:**
+- `Bash(ffmpeg:*)` - 動画・音声処理
+- `Bash(python:*)` - Python実行（rembg）
+- `Bash(pip:*)` - Python パッケージ管理
+
 **安全なGitコマンド（必要最小限）:**
 - `Bash(git:checkout:*)` - ブランチ作成・切り替え
 - `Bash(git:config:*)` - ユーザー設定
@@ -147,15 +156,10 @@ cat .claude/settings.json
 - `Bash(git:commit:*)` - コミット
 - `Bash(git:pull:*)` - リモートから取得
 
-**MCPツール（生成AI）:**
-- `mcp__t2i-fal-imagen4-ultra__*` - 高品質画像生成
-- `mcp__t2i-fal-imagen4-fast__*` - 高速画像生成
-- `mcp__r2v-fal-vidu-q1__*` - 参照動画生成
-- `mcp__t2v-fal-veo3-fast__*` - テキストから動画生成
-- `mcp__i2v-fal-hailuo-02-pro__*` - 画像から動画生成
-- `mcp__t2m-google-lyria__*` - 音楽生成
-
-**重要**: この設定は実際にワークフローが動作することを確認済みです。
+**MCPツール（動画生成）:**
+- `mcp__t2v-fal-veo3-fast__veo3_fast_submit` - 動画生成開始
+- `mcp__t2v-fal-veo3-fast__veo3_fast_status` - 生成状況確認
+- `mcp__t2v-fal-veo3-fast__veo3_fast_result` - 生成結果取得
 
 **🔒 セキュリティについて:**
 - ファイル削除コマンド（`rm`, `rmdir`, `mv`等）は一切許可していません
@@ -180,7 +184,7 @@ cat .claude/settings.json
 2. ログインまたはアカウント作成
 3. 左側メニューの「API Keys」をクリック
 4. 「Create Key」をクリック
-5. キー名を入力（例：`github-actions-music-video`）
+5. キー名を入力（例：`github-actions-video-bg-removal`）
 6. 作成されたAPIキーをコピー（⚠️この画面でしか表示されません）
 
 ### 2.3 PAT_TOKENの取得方法（オプション）
@@ -250,10 +254,14 @@ gh secret set ANTHROPIC_API_KEY --app actions --repo owner/repo-name
 ```
 your-repo/
 ├── .github/
-│   └── workflows/
-│       └── create-music-video.yml
+│   ├── workflows/
+│   │   ├── create-video-with-bg-removal.yml
+│   │   └── issue-bg-removal-trigger.yml
+│   └── ISSUE_TEMPLATE/
+│       └── video-bg-removal-request.md
 ├── .claude/
-│   └── mcp-kamuicode.json
+│   ├── mcp-kamuicode.json
+│   └── settings.json
 ├── README.md
 └── (他のファイル)
 ```
@@ -274,22 +282,32 @@ your-repo/
 
 ## 🧪 ステップ5: テスト実行
 
-### 5.1 手動テスト
+### 5.1 Issueテンプレートを使用したテスト
+
+1. **Issues**タブに移動
+2. **New issue**をクリック
+3. **動画背景除去リクエスト**を選択
+4. プロンプトを入力（例: "猫が公園で遊んでいる様子"）
+5. 背景色とモデルを選択（オプション）
+6. **Submit new issue**をクリック
+
+### 5.2 手動テスト
 
 1. **Actions**タブに移動
-2. **Create AI Music Video**ワークフローを選択
+2. **Create Video with Background Removal**ワークフローを選択
 3. **Run workflow**をクリック
-4. 音楽コンセプトを入力（例: "サイバーパンク都市のテクノ音楽"）
-5. **Run workflow**を実行
+4. 動画プロンプトを入力（例: "猫が公園で遊んでいる様子"）
+5. 背景色とrembgモデルを選択
+6. **Run workflow**を実行
 
-### 5.2 動作確認
+### 5.3 動作確認
 
 実行後、以下を確認：
 
-- [ ] 音楽ファイルが生成されている
-- [ ] 3つの画像が生成されている
-- [ ] 3つの動画が生成されている
-- [ ] 最終ミュージックビデオが生成されている
+- [ ] 元動画が生成されている
+- [ ] フレームが抽出されている
+- [ ] 背景除去が実行されている
+- [ ] 最終動画が生成されている
 - [ ] Pull Requestが自動作成されている
 
 ---
@@ -297,4 +315,3 @@ your-repo/
 **サポート:**
 - Issue報告: GitHub Issues
 - ドキュメント: README.md
-- 使用例: EXAMPLES.md

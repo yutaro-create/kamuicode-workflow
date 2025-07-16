@@ -14,11 +14,7 @@ AI Music Video Generator Workflow Setup Instructions
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/your-repository-name.git
-cd your-repository-name
-
-# Or navigate to existing repository
-cd your-existing-repo
+git clone https://github.com/KentaHomma/kamuicode-workflow.git
 ```
 
 ### 1.2 Workflow File Setup
