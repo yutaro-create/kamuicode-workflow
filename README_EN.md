@@ -24,9 +24,28 @@ AI-powered automatic video generation workflow
 
 - **Imagen4 Ultra** high-quality image generation
 - **Vidu Q1** reference video generation
+- Manual execution and Issue-triggered support
 - Automatic pull request creation
 
 Details: [video-workflow-template/](./video-workflow-template/)
+
+### 🎬 Video with Background Removal Workflow
+Video generation workflow with background removal functionality
+
+- Background removal processing
+- Video generation
+- Automatic pull request creation
+
+Details: [video-background-removal-workflow/](./video-background-removal-workflow/)
+
+### 🔍 Gemini I2V Analysis Workflow
+Image-to-video generation analysis workflow using Gemini API
+
+- Image analysis
+- Video generation optimization
+- Quality evaluation
+
+Details: [gemini-i2v-workflow/](./gemini-i2v-workflow/)
 
 ## Requirements
 
