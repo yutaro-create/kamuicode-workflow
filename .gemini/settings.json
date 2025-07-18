@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "t2i-fal-imagen4-fast": {
+      "httpUrl": "https://mcp-hunyuan3d-fix-20250710-141028-db555b0a-zl3xx5lsaq-uc.a.run.app/t2i/fal/imagen4/fast",
+      "timeout": 300000
+    },
+    "i2v-fal-hailuo-02-pro": {
+      "httpUrl": "https://mcp-hunyuan3d-fix-20250710-141028-db555b0a-zl3xx5lsaq-uc.a.run.app/i2v/fal/minimax/hailuo-02/pro",
+      "timeout": 300000
+    }
+  },
+  "coreTools": [
+    "ReadFileTool",
+    "WriteFileTool", 
+    "EditFileTool",
+    "ShellTool"
+  ]
+}
