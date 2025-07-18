@@ -1,0 +1,1 @@
+A playful and curious cat with sleek, agile movements, exploring a vibrant, sun-drenched garden, then gracefully leaping to catch a toy, followed by a gentle stretch and a contented nap. Dynamic camera, smooth transitions, natural lighting, high quality, fluid animation.

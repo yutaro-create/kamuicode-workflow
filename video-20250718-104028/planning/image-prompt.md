@@ -1,0 +1,1 @@
+A majestic fluffy cat with striking emerald eyes, basking in warm golden hour sunlight on a vintage armchair, intricate fur details, soft shadows, ultra-realistic, cinematic lighting, photorealistic, 8k, high resolution, masterpiece.
